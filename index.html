@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkinTone ID</title>
+    <link rel="stylesheet" href="css/styles.css?v=4">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>SkinTone ID</h1>
+            <button id="themeBtn" class="theme-btn">🌙 Oscuro</button>
+        </header>
+
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="view active">
+            <div class="dashboard-grid">
+                <div class="card main-card">
+                    <h2>Descubre tu Tono de Piel</h2>
+                    <p>Análisis inteligente de fototipo y subtóno con recomendaciones personalizadas.</p>
+                    <button id="startBtn" class="btn btn-primary">📷 Iniciar Escaneo</button>
+                </div>
+                <div class="card sidebar">
+                    <h3>Historial</h3>
+                    <div id="historyList" class="history-list">
+                        <p class="empty">Sin análisis previos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCANNER -->
+        <div id="scanner" class="view">
+            <div class="scanner-wrap">
+                <div class="name-input-wrap">
+                    <input type="text" id="userName" class="name-input" placeholder="Tu nombre..." maxlength="24">
+                </div>
+                <div class="camera-wrap">
+                    <video id="video" playsinline autoplay muted></video>
+                    <canvas id="canvas" class="hidden"></canvas>
+                    <div class="guide-overlay">
+                        <svg viewBox="0 0 300 300">
+                            <ellipse cx="150" cy="150" rx="110" ry="120" fill="none" stroke="rgba(124,58,237,0.8)" stroke-width="2" stroke-dasharray="6 4"/>
+                        </svg>
+                    </div>
+                    <div id="userNameOverlay" class="name-overlay"></div>
+                    <div id="filterOverlay" class="filter-overlay"></div>
+                    <div id="laser" class="laser"></div>
+                </div>
+                <div class="controls">
+                    <button id="filterBtn" class="btn btn-secondary">💡 Filtro Luz Neutra</button>
+                    <button id="captureBtn" class="btn btn-success">📸 Capturar</button>
+                    <button id="cancelBtn" class="btn btn-secondary">✕ Cancelar</button>
+                </div>
+            </div>
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Analizando tu tono de piel...</p>
+            </div>
+        </div>
+
+        <!-- RESULTS -->
+        <div id="results" class="view">
+            <div class="card results-card" id="resultsCard">
+                <div id="strip" class="strip"></div>
+                
+                <div class="result-hero">
+                    <div id="colorCircle" class="color-circle">
+                        <img id="capturedPhoto" class="captured-photo" src="" alt="Foto capturada">
+                    </div>
+                    <div>
+                        <p class="label">Hola, <span id="userNameDisplay" class="user-name">Usuario</span></p>
+                        <h2 id="toneName">—</h2>
+                        <span id="fitzBadge" class="badge">Fitzpatrick 1/6</span>
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div>
+                        <span class="label">Subtóno</span>
+                        <p id="undertone" class="badge">—</p>
+                    </div>
+                    <div>
+                        <span class="label">Combinación</span>
+                        <p id="combo" class="badge neutral">—</p>
+                    </div>
+                </div>
+
+                <div class="accordion open">
+                    <button class="acc-header">💡 Recomendaciones <span>▼</span></button>
+                    <div class="acc-body">
+                        <ul id="recsList" class="recs-list"></ul>
+                    </div>
+                </div>
+
+                <div class="accordion open">
+                    <button class="acc-header">🎨 Paleta de Colores <span>▼</span></button>
+                    <div class="acc-body">
+                        <div class="palette-row">
+                            <div class="pal-item"><div id="c1" class="swatch"></div><small>Primario</small></div>
+                            <div class="pal-item"><div id="c2" class="swatch"></div><small>Complementario</small></div>
+                            <div class="pal-item"><div id="c3" class="swatch"></div><small>Análogo</small></div>
+                            <div class="pal-item"><div id="c4" class="swatch"></div><small>Resaltado</small></div>
+                        </div>
+                        <div class="avoid">
+                            <p class="avoid-title">🚫 Colores a evitar</p>
+                            <p id="avoidNote" class="avoid-note">—</p>
+                            <div class="palette-row">
+                                <div class="pal-item"><div id="a1" class="swatch swatch-danger"></div><small>Principal</small></div>
+                                <div class="pal-item"><div id="a2" class="swatch swatch-danger"></div><small>Secundario</small></div>
+                                <div class="pal-item"><div id="a3" class="swatch swatch-danger"></div><small>Apagado</small></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion">
+                    <button class="acc-header">🔧 HEX / RGB <span>▼</span></button>
+                    <div class="acc-body">
+                        <div class="info-row">
+                            <div><span class="label">HEX</span><p id="hexVal" class="mono">#000000</p></div>
+                            <div><span class="label">RGB</span><p id="rgbVal" class="mono">rgb(0,0,0)</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button id="newScanBtn" class="btn btn-primary">📷 Nuevo Escaneo</button>
+                    <button id="saveBtn" class="btn btn-success">💾 Guardar</button>
+                    <button id="backBtn" class="btn btn-secondary">← Volver</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ERROR -->
+        <div id="errorBox" class="error-box hidden">
+            <span id="errorText"></span>
+            <button id="errClose" class="err-close">✕</button>
+        </div>
+
+        <footer class="footer">
+            SkinTone ID v1.0 · <span id="year"></span>
+        </footer>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
