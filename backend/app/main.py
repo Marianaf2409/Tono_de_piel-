@@ -22,7 +22,33 @@ from .utils.color_math import (
     fitzpatrick_to_tone_name
 )
 
-frontend_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+
+
+# ============================================================================
+# MODELOS PYDANTIC (Validación de datos)
+# ============================================================================
+
+class SkinAnalysisRequest(BaseModel):
+    """Modelo de validación para la solicitud de análisis de piel."""
+    image_base64: str
+
+
+class SkinAnalysisResponse(BaseModel):
+    """Modelo de respuesta del análisis de piel."""
+    hex_code: str
+    rgb_values: Dict[str, int]
+    fitzpatrick_score: int
+    tone_name: str
+    undertone: str
+    recommendations: List[str]
+    palette: Dict[str, str]
+    unflattering: Dict[str, str]
+
+
+# ============================================================================
+# INICIALIZACIÓN DE FASTAPI
+# ============================================================================
 
 app = FastAPI(
     title="SkinTone ID API",
@@ -30,16 +56,23 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Configurar CORS para permitir solicitudes desde el frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # En producción, especificar dominio
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+
+# ============================================================================
+# ENDPOINTS
+# ============================================================================
+
 app.mount("/css", StaticFiles(directory=os.path.join(frontend_dir, "css")), name="css")
 app.mount("/js", StaticFiles(directory=os.path.join(frontend_dir, "js")), name="js")
+
 
 @app.get("/api")
 async def api_root():
