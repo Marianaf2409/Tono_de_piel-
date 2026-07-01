@@ -22,7 +22,7 @@ from .utils.color_math import (
     fitzpatrick_to_tone_name
 )
 
-frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 
 # ============================================================================
